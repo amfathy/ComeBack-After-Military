@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>practice on before and after </title>
+    <style>
+        * {
+            padding: 0;
+            margin : 0 ;
+            box-sizing : border-box ; 
+        }
+
+        header{
+            width:100vh;
+            height :100vh ; 
+            background-color: aqua;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        header *{
+            z-index: 5;
+        }
+        header::before{
+            content:"";
+            position: absolute;
+            width: 100vh;
+            height: 100vh;
+            background-color: rgb(0,0,0,0.5);
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Welcome to My channel</h1>
+        <button>Like and Subscribe</button>
+    </header>
+</body>
+
+</html>
