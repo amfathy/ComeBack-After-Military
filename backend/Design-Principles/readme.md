@@ -1,5 +1,12 @@
 # Design Principles
 
+## 🎓 Credits
+
+This documentation is based on the explanation videos of **Eng. Essam Abdelnaby**:
+
+📺 [Design Principles | مبادئ التصميم — YouTube Playlist](https://www.youtube.com/playlist?list=PL4n1Qos4Tb6ThSyydEJTm7xJ3qEwE8Oyu)
+
+## 🎓 This Repo is
 A collection of core object-oriented design principles, each demonstrated with a concrete **before/after** C# refactoring example, UML diagrams, and a full explanation of what problem is being solved and why.
 
 Every folder below tackles one principle in isolation: the "before" code shows the design problem in a small, realistic scenario, and the "after" code shows the refactored solution — with the reasoning spelled out step by step.
