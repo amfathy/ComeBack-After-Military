@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ShopSphere — Database ERD</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1f2b;
+    --muted: #5b6472;
+    --border: #d9dee5;
+    --accent: #2f6feb;
+    --card: #f7f9fc;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161c; --fg: #e8ebf1; --muted: #9aa4b2; --border: #2a2f3a; --card: #1b1e26;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161c; --fg: #e8ebf1; --muted: #9aa4b2; --border: #2a2f3a; --card: #1b1e26;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  header {
+    padding: 20px 24px 12px; border-bottom: 1px solid var(--border);
+    position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 10;
+  }
+  h1 { margin: 0 0 4px; font-size: 1.3rem; }
+  .sub { color: var(--muted); font-size: .85rem; }
+  .toolbar { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  button {
+    font: inherit; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg); cursor: pointer;
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .legend {
+    display: flex; gap: 18px; flex-wrap: wrap; padding: 10px 24px; font-size: .8rem; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .legend span { white-space: nowrap; }
+  main { padding: 16px; overflow-x: auto; }
+  #diagram { min-width: 900px; }
+  .mermaid { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  footer { padding: 16px 24px 32px; color: var(--muted); font-size: .8rem; }
+  @media print {
+    header, .legend, .toolbar { position: static; }
+    button { display: none; }
+    @page { size: A3 landscape; margin: 10mm; }
+    body { background: #fff; color: #000; }
+    .mermaid { border: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🗺️ ShopSphere — Database ERD</h1>
+  <div class="sub">Geo · HR · Catalog · Inv · Sales · Loyalty — 22 tables</div>
+  <div class="toolbar">
+    <button class="primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <button onclick="toggleTheme()">🌓 Toggle theme</button>
+    <button onclick="zoom(1.15)">➕ Zoom in</button>
+    <button onclick="zoom(0.87)">➖ Zoom out</button>
+    <button onclick="zoom('reset')">↺ Reset zoom</button>
+  </div>
+</header>
+
+<div class="legend">
+  <span>‖—o{ &nbsp;=&nbsp; one → zero-or-many</span>
+  <span>‖—|{ &nbsp;=&nbsp; one → one-or-many</span>
+  <span>PK = Primary Key</span>
+  <span>FK = Foreign Key</span>
+  <span>UK = Unique Key</span>
+</div>
+
+<main>
+  <div id="diagram">
+    <pre class="mermaid">
+erDiagram
+    COUNTRIES {
+        int CountryId PK
+        nvarchar CountryName UK
+        char IsoCode UK
+    }
+    CITIES {
+        int CityId PK
+        int CountryId FK
+        nvarchar CityName
+    }
+    DEPARTMENTS {
+        int DepartmentId PK
+        nvarchar DepartmentName UK
+        decimal Budget
+    }
+    EMPLOYEES {
+        int EmployeeId PK
+        nvarchar FirstName
+        nvarchar LastName
+        nvarchar Email UK
+        date HireDate
+        decimal Salary
+        int DepartmentId FK
+        int ManagerId FK
+        int CityId FK
+        bit IsActive
+    }
+    CATEGORIES {
+        int CategoryId PK
+        nvarchar CategoryName UK
+        int ParentCategoryId FK
+    }
+    BRANDS {
+        int BrandId PK
+        nvarchar BrandName UK
+        int CountryId FK
+    }
+    SUPPLIERS {
+        int SupplierId PK
+        nvarchar CompanyName
+        nvarchar ContactEmail
+        int CityId FK
+        tinyint Rating
+    }
+    PRODUCTS {
+        int ProductId PK
+        nvarchar ProductName
+        varchar SKU UK
+        int CategoryId FK
+        int BrandId FK
+        decimal UnitPrice
+        decimal CostPrice
+        bit IsActive
+    }
+    PRODUCT_SUPPLIERS {
+        int ProductId PK,FK
+        int SupplierId PK,FK
+        decimal SupplyPrice
+        int LeadTimeDays
+    }
+    WAREHOUSES {
+        int WarehouseId PK
+        nvarchar WarehouseName UK
+        int CityId FK
+        int Capacity
+    }
+    STOCK {
+        int WarehouseId PK,FK
+        int ProductId PK,FK
+        int QuantityOnHand
+        int ReorderLevel
+    }
+    CUSTOMERS {
+        int CustomerId PK
+        nvarchar FirstName
+        nvarchar LastName
+        nvarchar Email UK
+        nvarchar Phone
+        date BirthDate
+        char Gender
+        int CityId FK
+        int ReferredByCustomerId FK
+        bit IsActive
+    }
+    CUSTOMER_ADDRESSES {
+        int AddressId PK
+        int CustomerId FK
+        nvarchar Street
+        int CityId FK
+        bit IsDefault
+    }
+    COUPONS {
+        int CouponId PK
+        varchar Code UK
+        tinyint DiscountPercent
+        date ValidFrom
+        date ValidTo
+        int MaxUses
+    }
+    ORDERS {
+        int OrderId PK
+        int CustomerId FK
+        int EmployeeId FK
+        datetime2 OrderDate
+        varchar Status
+        int ShippingAddressId FK
+        int CouponId FK
+        decimal ShippingFee
+    }
+    ORDER_ITEMS {
+        int OrderItemId PK
+        int OrderId FK
+        int ProductId FK
+        int Quantity
+        decimal UnitPrice
+        decimal DiscountPercent
+    }
+    PAYMENTS {
+        int PaymentId PK
+        int OrderId FK
+        datetime2 PaymentDate
+        decimal Amount
+        varchar Method
+        varchar Status
+    }
+    SHIPMENTS {
+        int ShipmentId PK
+        int OrderId FK,UK
+        int WarehouseId FK
+        datetime2 ShippedDate
+        datetime2 DeliveredDate
+        varchar Carrier
+        varchar TrackingNo
+    }
+    REVIEWS {
+        int ReviewId PK
+        int ProductId FK
+        int CustomerId FK
+        tinyint Rating
+        nvarchar Comment
+        datetime2 ReviewDate
+    }
+    TIERS {
+        tinyint TierId PK
+        nvarchar TierName UK
+        int MinPoint
+        decimal DiscountPercent
+    }
+    CUSTOMER_POINTS {
+        int CustomerId PK,FK
+        int Points
+        tinyint TierId FK
+        datetime2 UpdatedAt
+    }
+    POINTS_LEDGER {
+        bigint LedgerId PK
+        int CustomerId FK
+        int OrderId FK
+        int Points
+        varchar Reason
+        datetime2 CreatedAt
+    }
+
+    COUNTRIES ||--o{ CITIES : "has"
+    COUNTRIES ||--o{ BRANDS : "made in"
+    CITIES ||--o{ EMPLOYEES : "based in"
+    CITIES ||--o{ SUPPLIERS : "located in"
+    CITIES ||--o{ WAREHOUSES : "located in"
+    CITIES ||--o{ CUSTOMERS : "lives in"
+    CITIES ||--o{ CUSTOMER_ADDRESSES : "in"
+
+    DEPARTMENTS ||--o{ EMPLOYEES : "has"
+    EMPLOYEES ||--o{ EMPLOYEES : "manages"
+    EMPLOYEES ||--o{ ORDERS : "handles"
+
+    CATEGORIES ||--o{ CATEGORIES : "parent of"
+    CATEGORIES ||--o{ PRODUCTS : "classifies"
+    BRANDS ||--o{ PRODUCTS : "made by"
+
+    PRODUCTS ||--o{ PRODUCT_SUPPLIERS : "supplied via"
+    SUPPLIERS ||--o{ PRODUCT_SUPPLIERS : "supplies"
+    PRODUCTS ||--o{ STOCK : "stocked as"
+    WAREHOUSES ||--o{ STOCK : "holds"
+
+    CUSTOMERS ||--o{ CUSTOMERS : "refers"
+    CUSTOMERS ||--o{ CUSTOMER_ADDRESSES : "has"
+    CUSTOMERS ||--o{ ORDERS : "places"
+    CUSTOMERS ||--o{ REVIEWS : "writes"
+    CUSTOMER_ADDRESSES ||--o{ ORDERS : "ships to"
+    COUPONS ||--o{ ORDERS : "applied to"
+
+    ORDERS ||--|{ ORDER_ITEMS : "contains"
+    PRODUCTS ||--o{ ORDER_ITEMS : "ordered as"
+    ORDERS ||--o{ PAYMENTS : "paid by"
+    ORDERS ||--o| SHIPMENTS : "shipped as"
+    WAREHOUSES ||--o{ SHIPMENTS : "ships from"
+    PRODUCTS ||--o{ REVIEWS : "reviewed as"
+
+    CUSTOMERS ||--o| CUSTOMER_POINTS : "earns"
+    TIERS ||--o{ CUSTOMER_POINTS : "tier of"
+    CUSTOMERS ||--o{ POINTS_LEDGER : "logs"
+    ORDERS ||--o{ POINTS_LEDGER : "generates"
+    </pre>
+  </div>
+</main>
+
+<footer>
+  ShopSphere training database · Schemas: Geo, HR, Catalog, Inv, Sales, Loyalty · Generated for study/reference — print in landscape (A3 recommended) for best fit.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  function currentMermaidTheme() {
+    var t = document.documentElement.getAttribute('data-theme');
+    if (t === 'dark') return 'dark';
+    if (t === 'light') return 'default';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+  }
+  function renderMermaid() {
+    mermaid.initialize({ startOnLoad: false, theme: currentMermaidTheme(), er: { useMaxWidth: false } });
+    var el = document.querySelector('.mermaid');
+    var src = el.getAttribute('data-src') || el.textContent;
+    el.setAttribute('data-src', src);
+    el.removeAttribute('data-processed');
+    el.textContent = src;
+    mermaid.init(undefined, el);
+  }
+  function toggleTheme() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : (cur === 'light' ? null : (currentMermaidTheme() === 'dark' ? 'light' : 'dark'));
+    if (next) document.documentElement.setAttribute('data-theme', next);
+    else document.documentElement.removeAttribute('data-theme');
+    renderMermaid();
+  }
+  var scale = 1;
+  function zoom(factor) {
+    var svgWrap = document.getElementById('diagram');
+    if (factor === 'reset') { scale = 1; }
+    else { scale = Math.min(3, Math.max(0.4, scale * factor)); }
+    svgWrap.style.transform = 'scale(' + scale + ')';
+    svgWrap.style.transformOrigin = 'top left';
+  }
+  renderMermaid();
+</script>
+
+</body>
+</html>

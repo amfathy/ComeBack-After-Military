@@ -350,14 +350,30 @@ WHERE nm.n <= 300
 ORDER BY nm.n;
 
 -- every product has 1 supplier, even ids have 2, ids divisible by 5 have 3
-INSERT Catalog.ProductSuppliers (ProductId, SupplierId, SupplyPrice, LeadTimeDays)
-SELECT p.ProductId,
-       ((p.ProductId + s.off) % 40) + 1,
-       CAST(p.CostPrice * (0.90 + s.k * 0.05) AS DECIMAL(10,2)),
-       2 + (p.ProductId % 14)
+INSERT Catalog.ProductSuppliers
+(
+    ProductId,
+    SupplierId,
+    SupplyPrice,
+    LeadTimeDays
+)
+SELECT
+    p.ProductId,
+    ((p.ProductId + s.offset_value) % 40) + 1,
+    CAST(
+        p.CostPrice * (0.90 + s.k * 0.05)
+        AS DECIMAL(10,2)
+    ),
+    2 + (p.ProductId % 14)
 FROM Catalog.Products p
-JOIN (VALUES (0,0,1),(1,13,2),(2,27,5)) s(k, off, m) ON p.ProductId % s.m = 0;
-
+JOIN
+(
+    VALUES
+        (0, 0, 1),
+        (1, 13, 2),
+        (2, 27, 5)
+) s(k, offset_value, m)
+    ON p.ProductId % s.m = 0;
 -- ---------- Inventory ----------
 INSERT Inv.Warehouses (WarehouseName, CityId, Capacity)
 SELECT v.wname, c.CityId, v.cap
