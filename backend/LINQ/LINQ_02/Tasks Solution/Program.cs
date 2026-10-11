@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Task_solutions.Program;
 
 namespace Task_solutions
@@ -119,6 +120,42 @@ namespace Task_solutions
 
                 var res3 = males.Where(e => e.Department.ToLowerInvariant() == "it").Where(e => e.FirstName.ToLowerInvariant().StartsWith("a"));
                 //print(res3);
+                //////////////////////////////////////////////////////////////////
+                /* Create var males = employees.Where(...) first. Then, reusing males:
+
+                     Males in "HR"
+                    Males with salary > 100,000
+                    Males in "IT" with a first name starting with "A"
+                
+               */
+
+                var males5 = Repository.LoadEmployees();
+                var res5_1 = males5.Where(e => e.Department.ToLowerInvariant() == "hr");
+               
+                var res5_where_query =
+                    from male in males
+                    where male.Department == "hr"
+                    select male; 
+
+                var res5_2 = males.Where(e => e.Salary > 100000);
+                var res5_where_query_2 =
+                    from male in males
+                    where male.Salary > 100000
+                    select male; 
+
+                var res5_3 = males.Where(e => e.Department.ToLowerInvariant()=="it" && e.FirstName.ToLowerInvariant().StartsWith("a"));
+                var res5_where_query_3 =
+                    from male in males
+                    where male.Department == "hr" && male.FirstName.StartsWith("a") 
+                    select male;          // here is bug you need to add string comparison 
+
+                var res5_where_query_without_bug =
+                from employee in males
+                where employee.Department == "it"
+                   && employee.FirstName.StartsWith(
+                       "a", StringComparison.OrdinalIgnoreCase)
+                select employee;
+
 
                 //////////////////////////////////////////////////////////////////
 
@@ -163,6 +200,9 @@ namespace Task_solutions
                 Console.WriteLine(a.SequenceEqual(b)); 
              */
 
+
+
+
                 // task 11 
 
                 /*  // 1) Numbers greater than 4
@@ -191,6 +231,11 @@ namespace Task_solutions
 
 
 
+
+
+
+
+
             }
 
 
@@ -198,4 +243,3 @@ namespace Task_solutions
         }
     }
 }
-
